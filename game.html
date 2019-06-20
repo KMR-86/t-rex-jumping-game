@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div id="score">0</div>
+    <div id="msg"></div>
+    <canvas id="canvas" width="1000" height="600"></canvas>
+
+    <style>
+        #canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #score {
+          text-align: center;
+          font-size: 28px;
+          font-family: serif;
+      }
+      #msg {
+          text-align: center;
+          font-size: 28px;
+          font-family: serif;
+          padding-top: 10px;
+      }
+      
+  </style>
+</body>
+<script>
+    let context;
+    let gameCanvas = document.getElementById('canvas');
+    context = gameCanvas.getContext('2d');
+    var isGameOn=1;
+
+    var trex_interval_counter=0;
+    var score=0;
+    var imgObj = new Image();
+    var intervalJump,intervalGameCheck,intervalObs,intervalScore,interval;
+    
+    var trex_x=100;
+    var trex_y=200;
+    var trex_width=60;
+    var trex_height=55;
+
+    var obs1_x=1000;
+    var obs1_y=190;
+    var obs1_width=36;
+    var obs1_height=70;
+    
+    var obs2_x=1500;
+    var obs2_y=210;
+    var obs2_width=77;
+    var obs2_height=50;
+
+    var gameSpeed=3;
+    var gameSpeedFlag=1;
+
+    imgObj.src = 'images/dragonT.png'; 
+
+    imgObj.onload = function() {
+        context.drawImage(imgObj,trex_x,trex_y,trex_width,trex_height);
+    };
+    function rectClashDetection(ax1,ax2,ay1,ay2,bx1,bx2,by1,by2){
+        if ((ax1<=bx1 && bx1<=ax2) || (ax1<=bx2 && bx2<=ax2) || (bx1<=ax1 && ax1<=bx2) || (bx1<=ax2 && ax2<=bx2) ) {
+            if ((ay1<=by1 && by1<=ay2) || (ay1<=by2 && by2<=ay2) || (by1<=ay1 && ay1<=by2) || (by1<=ay2 && ay2<=by2)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    document.addEventListener("keydown", jump);
+    function jump(event){
+        const keyPressed = event.keyCode; 
+        if (keyPressed===39) {
+            context.clearRect(trex_x,trex_y,trex_width,trex_height);
+            trex_x=trex_x+2;
+            context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+        }
+        if (keyPressed===37) {
+            context.clearRect(trex_x,trex_y,trex_width,trex_height);
+            trex_x=trex_x-2;;
+            context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+        }
+        var jumpSpeed=-2;
+        var t=0;
+        if (keyPressed===32) {
+            if (trex_y===200 && isGameOn===1) {
+                intervalJump=setInterval(function(){
+
+                    trex_interval_counter++;
+                    t++;
+                    context.clearRect(trex_x,trex_y,trex_width,trex_height);
+                    trex_y=200-(12*t-6/25*t*t);  //equ-> u=2H/T and g=H/T^2   here H=150 and T= 25 so we got u and g
+                    context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+                    if (trex_interval_counter==50) {trex_interval_counter=0;t=0; clearInterval(intervalJump);}
+                },13)
+            }
+
+
+        }
+        if (keyPressed===82) {
+            if(isGameOn===1){isGameOn=0;}
+            else{isGameOn=1;}
+        }
+
+    }
+    function obstactles(){
+        var obs1 = new Image();
+        obs1.src = 'images/tree1.png';
+        var obs2 = new Image();
+        obs2.src = 'images/tree2T.png'; 
+        obs1.onload = function() {
+            context.drawImage(obs1,obs1_x,obs1_y,obs1_width,obs1_height);
+        };
+        
+        obs2.onload = function() {
+            context.drawImage(obs2,obs2_x,obs2_y,obs2_width,obs2_height);
+        };
+        function obstacleMove(){
+
+
+            context.drawImage(imgObj,trex_x,trex_y,trex_width,trex_height);
+            context.clearRect(obs1_x,obs1_y,obs1_width,obs1_height);
+            context.clearRect(obs2_x,obs2_y,obs2_width,obs2_height);
+            if (gameSpeedFlag===1 && score===100) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===2 && score===200) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===3 && score===300) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===4 && score===400) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===5 && score===500) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===6 && score===600) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===7 && score===700) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===8 && score===800) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===9 && score===900) {gameSpeed++;gameSpeedFlag++;}
+            else if (gameSpeedFlag===10 && score===1000) {gameSpeed++;gameSpeedFlag++;}
+            
+            
+            if (obs1_x>-200) {
+
+                obs1_x=obs1_x-gameSpeed;
+            }
+            else{
+                var randomNumberBetween0and600 = Math.floor(Math.random() * 600);
+                obs1_x=1010+randomNumberBetween0and600;
+            }
+
+            if (obs2_x>-200) {
+                obs2_x=obs2_x-gameSpeed;
+            }
+            else{
+                var randomNumberBetween0and600 = Math.floor(Math.random() * 600);
+                obs2_x=1010+randomNumberBetween0and600;
+            }
+
+            context.drawImage(obs1,obs1_x,obs1_y,obs1_width,obs1_height);
+            context.drawImage(obs2,obs2_x,obs2_y,obs2_width,obs2_height); 
+            
+
+        }
+        if (isGameOn===1) {intervalObs=setInterval(obstacleMove,10);}
+        else{clearInterval(intervalObs);}
+
+        var intervalScore=setInterval(function(){
+            if(isGameOn===1)score++;
+            document.getElementById('score').innerHTML = "score : "+score;
+            
+        },200);
+    }
+    function gameCheck(){
+        var intervalGameCheck = setInterval(function(){
+            /*if (obs2_x<=trex_x+20 && trex_x-20<=obs2_x && 200<=trex_y+20 && trex_y-20<=200) {
+                clearInterval(intervalObs);
+                clearInterval(intervalScore);
+                clearInterval(intervalJump);
+                isGameOn=0;
+                document.getElementById('msg').innerHTML = "GameOver";
+                context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+
+
+            }*/
+            if (rectClashDetection(trex_x+5,trex_x+trex_width-5,trex_y+5,trex_y+trex_height-5,obs1_x+5,obs1_x+obs1_width-5,obs1_y+5,obs1_y+obs1_height-5)) {
+
+                clearInterval(intervalObs);
+                clearInterval(intervalScore);
+                clearInterval(intervalJump);
+                isGameOn=0;
+                document.getElementById('msg').innerHTML = "GameOver";
+                context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+
+
+            }
+            if (rectClashDetection(trex_x+5,trex_x+trex_width-5,trex_y+5,trex_y+trex_height-5,obs2_x+5,obs2_x+obs2_width-5,obs2_y+5,obs2_y+obs2_height-5)) {
+                clearInterval(intervalObs);
+                clearInterval(intervalScore);
+                clearInterval(intervalJump);
+                isGameOn=0;
+                document.getElementById('msg').innerHTML = "GameOver";
+                context.drawImage(imgObj, trex_x,trex_y,trex_width,trex_height);
+
+
+            }
+        },10);
+    }
+    
+    obstactles();
+    gameCheck();
+</script>
+</html>
